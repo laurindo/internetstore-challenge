@@ -1,0 +1,14 @@
+{
+  "name": "internet-stores-challenge",
+  "version": "1.0.0",
+  "description": "Challenge Internet Stores using Node JS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Daniel Laurindo",
+  "license": "ISC",
+  "dependencies": {
+    "js-yaml": "^3.11.0"
+  }
+}
