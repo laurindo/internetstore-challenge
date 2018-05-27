@@ -1,29 +1,34 @@
 const fs = require('fs');
 const yaml = require('js-yaml');
 const util = require('util');
-const readFile = util.promisify(fs.readFile);
+const ReadFilePromisify = util.promisify(fs.readFile);
 
+const MergeData = require('./merge-data-service');
+const ErrorGenerator = require('./error-generator-service');
 const GeneralConstant = require('../constants/general-constant');
 const EXTENSIONS = GeneralConstant.EXTENSIONS;
 const SITES = GeneralConstant.SITES;
+const ENV = GeneralConstant.ENV;
+const ERRORS = GeneralConstant.ERRORS;
 
-const readData = async pathName => {
-    const data = await readFile(pathName, 'utf8').catch(err => { return err });
+exports.readData = async pathName => {
+    const data = await ReadFilePromisify(pathName, 'utf8').catch(err => { return err });
     try {
         return JSON.parse(data);
     } catch (e) {
-        return { err: e, detail: data };
+        return ErrorGenerator.generate(ERRORS.error_parse, '', 500, { details: data });
     }
 };
 
-const readAllPromises = async options => {
+exports.readAllPromises = async options => {
+    const self = this;
     let sitesMerged = {};       // make a merge between files config
     let promises = [];          // list of array to be resolved using Promise.all
     let promiseResults = null;  // results of resolved promises
 
     // For each site I need to get the data inside the .json or .yaml
     SITES.forEach(async site => {
-        let res = readData(getPathName(`${options.configName}_${site}`, options.extension));
+        let res = self.readData(self.getPathName(`${options.configName}_${site}`, options.extension));
         promises.push(res); 
     });
 
@@ -38,30 +43,20 @@ const readAllPromises = async options => {
     return sitesMerged;
 };
 
-const readFileJSON = async options => {
+exports.readFileJSON = async options => {
     let result = null;
     let err = null;
     
     if (options.siteId) {
-        result = await readData(options.pathName);
+        result = await this.readData(options.pathName);
     } else {
-        let merged = {};
-        result = await readAllPromises(options);
-        let result1 = await readData(getPathName(`${options.configName}`, options.extension));
-        Object.keys(result).forEach(key => {
-            if (result[key][options.environment]) {
-                merged = Object.assign({}, result1[options.environment], result[key][options.environment]);
-                console.log(merged);
-            }
-            Object.assign({}, result1[options.environment], result[key][options.environment]);   
-        });
-        console.log(result1)
+        result = await MergeData.mergeEnviroments(options);
     }
 
     options.callback(null, result, options);
 };
 
-const readFileYML = options => {
+exports.readFileYML = options => {
     try {
         const callback = options.callback;
         const config = yaml.safeLoad(fs.readFileSync(options.pathName, 'utf8'));
@@ -73,15 +68,34 @@ const readFileYML = options => {
     }
 };
 
-const proxyReadFile = options => {
+exports.proxyReadFile = options => {
     if (options.extension === EXTENSIONS.json) {
-        readFileJSON(options);
+        this.readFileJSON(options);
     } else if (options.extension === EXTENSIONS.yml || options.extension === EXTENSIONS.yaml) {
-        readFileYML(options);
+        this.readFileYML(options);
     }
 };
 
-const getFileName = (configName, siteId) => {
+/**
+ * Given a configName and(or) siteId should return a File Name
+ * 
+ * Example Input with 'configName'
+ *  - configName:   'checkout'
+ *  - siteId:       'anpl'
+ * 
+ * Example Output:
+ *  - 'checkout_anpl'
+ * 
+ * Example Input with only 'configName'
+ *  - configName:   'checkout'
+ * 
+ * Example Output:
+ *  - 'checkout'
+ * 
+ * @param {string} configName   - checkout  [required]
+ * @param {string} siteId       - anpl      [optional]
+*/
+exports.getFileName = (configName, siteId) => {
     if (configName && siteId) {
         return `${configName}_${siteId}`;
     } else if (configName) {
@@ -90,40 +104,32 @@ const getFileName = (configName, siteId) => {
     return null;
 };
 
-const getPathName = (fileName, extension) => {
+/**
+ * Given a fileName and extension, should return a relative Path Name
+ * Example Input
+ *  - fileName: 'checkout'
+ *  - extension: 'json'
+ * 
+ * Example Output
+ *  - './config-files/checkout.json'
+ * 
+ * @param {string} fileName   - checkout        [required]
+ * @param {string} extension  - json/yaml/yml   [required]
+*/
+exports.getPathName = (fileName, extension) => {
     return `./config-files/${fileName}.${extension}`;
 };
 
 /**
- * @param {string} configName   - file name
- * @param {string} siteId       - name site
- * @param {string} configName   - file name
+ * @param {string} configName       - file name                                         [required]
+ * @param {string} siteId           - name site                                         [optional]
+ * @param {string} environment      - environment name (development/staging/production) [optional]
+ * @param {object} options          - some extra params                                 [optional]
 */
-/*const getConfig = (configName, siteId, extension, environment = 'production', command, callback) => {
-    const fileName = getFileName(configName, siteId);
-    const pathName = getPathName(fileName, extension);
-    const options = {
-        pathName,
-        configName, 
-        siteId,
-        environment, 
-        extension,
-        command
-    };
-
-    if (!fileName) {
-        callback({ error: 'At least configName is required' });
-    }
-
-    // Call File Stream to read the path file and execute callback
-    proxyReadFile(options, callback);
-
-};*/
-
-const getConfig = (configName, siteId, environment = 'production', options) => {
-    const fileName = getFileName(configName, siteId);
-    const pathName = getPathName(fileName, options.extension);
-    options = Object.assign({}, options, {
+exports.getConfig = (configName, siteId, environment = 'production', options) => {
+    const fileName = this.getFileName(configName, siteId);
+    const pathName = this.getPathName(fileName, options.extension);
+    options = MergeData.merge(options, {
         pathName,
         configName, 
         siteId,
@@ -131,15 +137,10 @@ const getConfig = (configName, siteId, environment = 'production', options) => {
     });
 
     if (!fileName) {
-        options.callback({ error: 'Config Name and Extension are required' });
+        options.callback(ErrorGenerator.generate(ERRORS.name_and_extension_required));
     }
 
     // Call File Stream to read the path file and execute callback
-    proxyReadFile(options);
+    this.proxyReadFile(options);
 
 };
-
-exports.getConfig = getConfig;
-exports.proxyReadFile = proxyReadFile;
-exports.readFileJSON = readFileJSON;
-exports.readFileYML = readFileYML;

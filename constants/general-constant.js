@@ -1,4 +1,7 @@
 exports.ERRORS = {
+    default: 'Some error happenend',
+    error_parse: 'It was not possible to parse file',
+    name_and_extension_required: 'Config Name and Extension are required',
     help: `
     You probably forgot some argument. 
     
@@ -26,3 +29,9 @@ exports.EXTENSIONS = {
 };
 
 exports.SITES = ['anpl', 'bkbe', 'bkit'];
+
+exports.ENV = {
+    prod: 'production',
+    qa: 'staging',
+    dev: 'development'
+}

@@ -17,6 +17,10 @@
             "args": [
                 "-cn",
                 "checkout",
+                "-si",
+                "anpl",
+                "-ev",
+                "production",
                 "-ex",
                 "json"
             ]
