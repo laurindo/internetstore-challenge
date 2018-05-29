@@ -16,15 +16,11 @@
             },
             "args": [
                 "-cn",
-                "checkout",
+                "forms_customer",
                 "-ev",
                 "production",
-                "-si",
-                "anpl",
-                "-cm",
-                "{\"only_env\":\"true\"}",
                 "-ex",
-                "json"
+                "yml"
             ]
         }
     ]

@@ -5,6 +5,7 @@ const ReadFilePromisify = util.promisify(fs.readFile);
 
 const MergeData = require('./merge-data-service');
 const ErrorGenerator = require('./error-generator-service');
+const UtilsService = require('./utils-service');
 const GeneralConstant = require('../constants/general-constant');
 const EXTENSIONS = GeneralConstant.EXTENSIONS;
 const SITES = GeneralConstant.SITES;
@@ -75,9 +76,9 @@ exports.readFileYML = options => {
 };
 
 exports.proxyReadFile = options => {
-    if (options.extension === EXTENSIONS.json) {
+    if (UtilsService.isJSON(options)) {
         this.readFileJSON(options);
-    } else if (options.extension === EXTENSIONS.yml || options.extension === EXTENSIONS.yaml) {
+    } else if (UtilsService.isYML(options)) {
         this.readFileYML(options);
     }
 };
@@ -126,15 +127,6 @@ exports.getPathName = (fileName, extension) => {
     return `./config-files/${fileName}.${extension}`;
 };
 
-exports.validJSON = options => {
-    if (options && options.commands && typeof options.commands === 'string') {
-        return JSON.parse(options.commands);
-    } else if (options && options.commands && typeof options.commands === 'object') {
-        return options.commands;
-    }
-    return null;
-};
-
 /**
  * @param {string} configName       - file name                                         [required]
  * @param {string} siteId           - name site                                         [optional]
@@ -144,7 +136,7 @@ exports.validJSON = options => {
 exports.getConfig = (configName, siteId, environment = 'production', options) => {
     const fileName = this.getFileName(configName, siteId);
     const pathName = this.getPathName(fileName, options.extension);
-    const commands = this.validJSON(options);
+    const commands = UtilsService.validateCommandsJSON(options);
     options = MergeData.merge(options, {
         pathName,
         configName, 
