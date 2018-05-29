@@ -72,21 +72,26 @@ $ node index -cn checkout -si anpl -ex yaml
 ```
 
 #### [Commands]
-**-cn configName:**     represent the file's name
+**-cn configName:**  
+represent the file's name  
 (checkout/config/forms_customer)
 
-**-si siteId:**         represent site name             
+**-si siteId:**  
+represent site name              
 bkbe/anpl/bkit
 
-**-ev environment:**    represent environment name      
+**-ev environment:**  
+represent environment name  
 production/staging/development
 
-**-ex extension:**      represent file extension        
+**-ex extension:**  
+represent file extension  
 yaml/json
 
-**-cm commands:**       I can pass extra commands       
+**-cm commands:**  
+I can pass extra commands  
 {\"only_env\":\"true\"}
 
-### Developer
+### Developer  
 
 Daniel Laurindo
