@@ -6,6 +6,6 @@ exports.generate = (shortMsg = ERRORS.default, fullMsg = '', status = 400, optio
     error: shortMsg, 
     message: fullMsg, 
     details: options.details, 
-    status: option.status 
+    status: status
   };
 };

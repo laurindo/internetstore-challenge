@@ -83,6 +83,9 @@
                     "position": 12
                 }
             }
+        },
+        "staging": {
+            "test": "test"
         }
     }
 }

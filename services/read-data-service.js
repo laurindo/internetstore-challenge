@@ -35,7 +35,7 @@ exports.readAllPromises = async options => {
     // Get all promises resolved inside array
     promiseResults = await Promise.all(promises);
     promiseResults.forEach(result => {
-        if (result && !result.err) {
+        if (result && !result.error) {
             sitesMerged = Object.assign({}, sitesMerged, result);
         }
     });
@@ -44,16 +44,22 @@ exports.readAllPromises = async options => {
 };
 
 exports.readFileJSON = async options => {
-    let result = null;
-    let err = null;
+    try {
+        let result = null;
+        let err = null;
+        
+        if (options.siteId) {
+            result = await this.readData(options.pathName);
+            result = MergeData.mergeSiteWithEnv(result, options);
+        } else {
+            result = await MergeData.mergeEnviroments(options);
+        }
     
-    if (options.siteId) {
-        result = await this.readData(options.pathName);
-    } else {
-        result = await MergeData.mergeEnviroments(options);
+        options.callback(null, result, options);
+    } catch (e) {
+        const error = ErrorGenerator.generate(ERRORS.error_parse, '', 500, { details: e });
+        options.callback(error);
     }
-
-    options.callback(null, result, options);
 };
 
 exports.readFileYML = options => {
@@ -120,6 +126,15 @@ exports.getPathName = (fileName, extension) => {
     return `./config-files/${fileName}.${extension}`;
 };
 
+exports.validJSON = options => {
+    if (options && options.commands && typeof options.commands === 'string') {
+        return JSON.parse(options.commands);
+    } else if (options && options.commands && typeof options.commands === 'object') {
+        return options.commands;
+    }
+    return null;
+};
+
 /**
  * @param {string} configName       - file name                                         [required]
  * @param {string} siteId           - name site                                         [optional]
@@ -129,11 +144,13 @@ exports.getPathName = (fileName, extension) => {
 exports.getConfig = (configName, siteId, environment = 'production', options) => {
     const fileName = this.getFileName(configName, siteId);
     const pathName = this.getPathName(fileName, options.extension);
+    const commands = this.validJSON(options);
     options = MergeData.merge(options, {
         pathName,
         configName, 
         siteId,
-        environment
+        environment,
+        commands
     });
 
     if (!fileName) {

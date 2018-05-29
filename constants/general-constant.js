@@ -6,11 +6,11 @@ exports.ERRORS = {
     You probably forgot some argument. 
     
     [HELP]
-    -cn configName:     represent the file's name               (checkout/config/forms_customer)
-    -si siteId:         represent site name                     (bkbe/anpl/bkit)
-    -ev environment:    represent environment name              (production/staging/development)
-    -ex extension:      represent file extension                (yaml/json)
-    -cm command:        I can pass some command more complex    (all)
+    -cn configName:     represent the file's name       (checkout/config/forms_customer)
+    -si siteId:         represent site name             (bkbe/anpl/bkit)
+    -ev environment:    represent environment name      (production/staging/development)
+    -ex extension:      represent file extension        (yaml/json)
+    -cm commands:       I can pass extra commands       ({ 'only_env': true })
     `
 };
 

@@ -17,10 +17,12 @@
             "args": [
                 "-cn",
                 "checkout",
-                "-si",
-                "anpl",
                 "-ev",
                 "production",
+                "-si",
+                "anpl",
+                "-cm",
+                "{\"only_env\":\"true\"}",
                 "-ex",
                 "json"
             ]
