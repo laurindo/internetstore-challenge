@@ -8,6 +8,17 @@ Challenge to read a bunch of files .json or .yaml and show the correct format.
 
 It requires [Node.js](https://nodejs.org/) v8+ to run.
 
+**Install Dependencies**
+```sh
+$ npm install
+```
+
+**Test**
+
+```sh
+$ npm run test
+```
+
 Install the dependencies and devDependencies and start the server.
 
 **Test Case 01**
