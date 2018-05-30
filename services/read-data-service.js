@@ -70,8 +70,8 @@ exports.readFileYML = options => {
         const indentedJson = JSON.stringify(config, null, 4);
         callback(null, indentedJson, options);
     } catch (e) {
-        console.log(e);
-        callback(e);
+        const error = ErrorGenerator.generate(ERRORS.error_parse, '', 500, { details: e });
+        options.callback(error);
     }
 };
 

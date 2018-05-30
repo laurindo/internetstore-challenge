@@ -2,21 +2,31 @@ const GeneralConstant = require('../constants/general-constant');
 const EXTENSIONS = GeneralConstant.EXTENSIONS;
 
 exports.isYML = options => {
-  return options.extension === EXTENSIONS.yml || options.extension === EXTENSIONS.yaml;
+  return options && (options.extension === EXTENSIONS.yml || options.extension === EXTENSIONS.yaml);
 };
 
 exports.isJSON = options => {
-  return options.extension === EXTENSIONS.json;
+  return options && (options.extension === EXTENSIONS.json);
+};
+
+exports.isObject = obj => {
+  if (obj) {
+    return typeof obj === 'object';
+  }
+  return null;
 };
 
 exports.dataIsString = obj => {
-  return typeof obj === 'string';
+  if (obj) {
+    return typeof obj === 'string';
+  }
+  return null;
 };
 
 exports.validateCommandsJSON = options => {
-  if (options && options.commands && typeof options.commands === 'string') {
+  if (options && options.commands && this.dataIsString(options.commands)) {
       return JSON.parse(options.commands);
-  } else if (options && options.commands && typeof options.commands === 'object') {
+  } else if (options && options.commands && this.isObject(options.commands)) {
       return options.commands;
   } else if ((options.siteId === 'default' || !options.siteId) && this.isYML(options)) {
       return { ...options.commands, default: true };

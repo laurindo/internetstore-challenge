@@ -16,11 +16,11 @@
             },
             "args": [
                 "-cn",
-                "forms_customer",
+                "checkout",
                 "-ev",
                 "production",
                 "-ex",
-                "yml"
+                "json"
             ]
         }
     ]

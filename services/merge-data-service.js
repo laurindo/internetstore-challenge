@@ -2,6 +2,7 @@ const ReadDataService = require('./read-data-service');
 const ErrorGenerator = require('../services/error-generator-service');
 const GeneralConstant = require('../constants/general-constant');
 const ENV = GeneralConstant.ENV;
+const ERRORS = GeneralConstant.ERRORS;
 
   /**
    * Spread objects to merge inside one object
@@ -53,20 +54,29 @@ const ENV = GeneralConstant.ENV;
     }
   };
 
+  exports.mergeResultByEachENVList = (result, dataFromFile) => {
+    try {
+      const self = this;
+      Object.keys(result).forEach(key => {
+        result[key][ENV.prod] = self.mergeEnv(result[key], ENV.prod, dataFromFile);
+        result[key][ENV.dev] = self.mergeEnv(result[key], ENV.dev, dataFromFile);
+        result[key][ENV.qa] = self.mergeEnv(result[key], ENV.qa,  dataFromFile);
+      });
+      return result;
+    } catch (e) {
+      return ErrorGenerator.generate(ERRORS.data_empty, '', 500, { details: e });
+    }
+  };
+
   /**
    * Merge data from all enviroments - production/staging/development
   */
   exports.mergeEnviroments = async options => {
     try {
-      self = this;
+      if (!options) { ErrorGenerator.generate(ERRORS.options_not_be_empty, '', 404, { details: null }); }
       const result = await ReadDataService.readAllPromises(options);
       let dataFromFile = await ReadDataService.readData(ReadDataService.getPathName(`${options.configName}`, options.extension));
-      Object.keys(result).forEach(key => {
-          result[key][ENV.prod] = self.mergeEnv(result[key], ENV.prod, dataFromFile);
-          result[key][ENV.dev] = self.mergeEnv(result[key], ENV.dev, dataFromFile);
-          result[key][ENV.qa] = self.mergeEnv(result[key], ENV.qa,  dataFromFile);
-      });
-      return result;
+      return this.mergeResultByEachENVList(result, dataFromFile);
     } catch (e) {
       return ErrorGenerator.generate(ERRORS.error_parse, '', 500, { details: e });
     }
