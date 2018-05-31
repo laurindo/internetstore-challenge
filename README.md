@@ -19,8 +19,6 @@ $ npm install
 $ npm run test
 ```
 
-Install the dependencies and devDependencies and start the server.
-
 **Test Case 01**
 ```sh
 $ npm install

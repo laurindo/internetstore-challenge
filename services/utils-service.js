@@ -2,6 +2,7 @@ const ErrorGenerator = require('./error-generator-service');
 const GeneralConstant = require('../constants/general-constant');
 const EXTENSIONS = GeneralConstant.EXTENSIONS;
 const ERRORS = GeneralConstant.ERRORS;
+const FIXTURE_PATH = GeneralConstant.FIXTURE_PATH;
 
 /**
  * Given a number check if operation MOD return true
@@ -179,5 +180,5 @@ exports.getFileName = (configName, siteId) => {
 * @param {string} extension  - json/yaml/yml   [required]
 */
 exports.getPathName = (fileName, extension) => {
-  return `./fixtures/${fileName}.${extension}`;
+  return `${FIXTURE_PATH}/${fileName}.${extension}`;
 };

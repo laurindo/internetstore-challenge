@@ -1,5 +1,7 @@
 const expect = require('chai').expect;
 const UtilsService = require('../services/utils-service');
+const GeneralConstant = require('../constants/general-constant');
+const FIXTURE_PATH = GeneralConstant.FIXTURE_PATH;
 
 describe('## UTILS SERVICE ##', () => {
   it('should return correct file name #01', () => {
@@ -14,17 +16,17 @@ describe('## UTILS SERVICE ##', () => {
 
   it('should return correct path name #JSON', () => {
     const pathName = UtilsService.getPathName('checkout', 'json');
-    expect(pathName).to.equal('./fixtures/checkout.json');
+    expect(pathName).to.equal(`${FIXTURE_PATH}/checkout.json`);
   });
 
   it('should return correct path name #YML', () => {
     const pathName = UtilsService.getPathName('checkout', 'yml');
-    expect(pathName).to.equal('./fixtures/checkout.yml');
+    expect(pathName).to.equal(`${FIXTURE_PATH}/checkout.yml`);
   });
 
   it('should return correct path name #YAML', () => {
     const pathName = UtilsService.getPathName('checkout', 'yaml');
-    expect(pathName).to.equal('./fixtures/checkout.yaml');
+    expect(pathName).to.equal(`${FIXTURE_PATH}/checkout.yaml`);
   });
 
   it('should be a YAML extension file', () => {

@@ -38,4 +38,6 @@ exports.ENV = {
     prod: 'production',
     qa: 'staging',
     dev: 'development'
-}
+};
+
+exports.FIXTURE_PATH = './fixtures';
