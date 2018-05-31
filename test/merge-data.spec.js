@@ -70,9 +70,9 @@ describe('## MERGE DATA ##', () => {
 
   it('should return error message to try merge env', () => {
     const mergeError = MergeDataService.mergeEnv(null, envDevelopment, bkbe);
-    expect(mergeError.error).to.be.equal(ERRORS.error_parse);
+    expect(mergeError.message).to.be.equal(ERRORS.error_parse);
     expect(mergeError.status).to.be.equal(500);
-    expect(mergeError).to.include.all.keys('details');
+    expect(mergeError).to.include.all.keys('error');
   });
 
   it('should to merge all environment inside sites', () => {

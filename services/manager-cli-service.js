@@ -1,29 +1,16 @@
-const ERROR_MSG = require('../constants/general-constant');
-
-const isEVEN = value => {
-    return value % 2 === 0;
-};
+const UtilsService = require('./utils-service');
+const GeneralConstant = require('../constants/general-constant');
+const ERRORS = GeneralConstant.ERRORS;
 
 const getConfigParams = () => {
     const args = process.argv.splice(2, process.argv.length);
-    let config = {};
-    let tempKey = '';
-
-    if (!isEVEN(args.length)) {
-        throw new Error(ERROR_MSG.ERRORS.help);
+    
+    if (!UtilsService.isMod(args.length)) {
+        throw new Error(ERRORS.help);
         return;
     }
 
-    args.forEach(function (val, index, array) {
-        if (isEVEN(index)) {
-            config[val] = '';
-            tempKey = val;
-        } else {
-            config[tempKey] = val;
-        }
-    });
-
-    return config;
+    return UtilsService.breakArrayInObject(args);
 };
 
 exports.getConfigParams = getConfigParams;

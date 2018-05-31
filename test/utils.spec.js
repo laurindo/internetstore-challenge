@@ -2,29 +2,54 @@ const expect = require('chai').expect;
 const UtilsService = require('../services/utils-service');
 
 describe('## UTILS SERVICE ##', () => {
+  it('should return correct file name #01', () => {
+    const fileName = UtilsService.getFileName('checkout', 'anpl');
+    expect(fileName).to.equal('checkout_anpl');
+  });
+
+  it('should return correct file name #02', () => {
+    const fileName = UtilsService.getFileName('checkout');
+    expect(fileName).to.equal('checkout');
+  });
+
+  it('should return correct path name #JSON', () => {
+    const pathName = UtilsService.getPathName('checkout', 'json');
+    expect(pathName).to.equal('./fixtures/checkout.json');
+  });
+
+  it('should return correct path name #YML', () => {
+    const pathName = UtilsService.getPathName('checkout', 'yml');
+    expect(pathName).to.equal('./fixtures/checkout.yml');
+  });
+
+  it('should return correct path name #YAML', () => {
+    const pathName = UtilsService.getPathName('checkout', 'yaml');
+    expect(pathName).to.equal('./fixtures/checkout.yaml');
+  });
+
   it('should be a YAML extension file', () => {
-    const isYAML = UtilsService.isYML({ extension: 'yaml' });
-    expect(isYAML).to.equal(true);
+    const isExtensionYAML = UtilsService.isExtensionYML({ extension: 'yaml' });
+    expect(isExtensionYAML).to.equal(true);
   });
   
   it('should be a YML extension file', () => {
-    const isYML = UtilsService.isYML({ extension: 'yml' });
-    expect(isYML).to.equal(true);
+    const isExtensionYML = UtilsService.isExtensionYML({ extension: 'yml' });
+    expect(isExtensionYML).to.equal(true);
   });
 
   it('should not be a YML extension file', () => {
-    const isYML = UtilsService.isYML();
-    expect(isYML).to.equal(undefined);
+    const isExtensionYML = UtilsService.isExtensionYML();
+    expect(isExtensionYML).to.equal(undefined);
   });
 
   it('should be a JSON extension file', () => {
-    const isJSON = UtilsService.isJSON({ extension: 'json' });
-    expect(isJSON).to.equal(true);
+    const isExtensionJSON = UtilsService.isExtensionJSON({ extension: 'json' });
+    expect(isExtensionJSON).to.equal(true);
   });
 
   it('should not be a JSON extension file', () => {
-    const isJSON = UtilsService.isJSON();
-    expect(isJSON).to.equal(undefined);
+    const isExtensionJSON = UtilsService.isExtensionJSON();
+    expect(isExtensionJSON).to.equal(undefined);
   });
 
   it('should to validate if object is a typeof string', () => {
@@ -73,4 +98,29 @@ describe('## UTILS SERVICE ##', () => {
     const defaultAttr = UtilsService.validateCommandsJSON({ siteId: 'default', extension: 'json' });
     expect(defaultAttr).to.equal(null);
   });
+
+  it('should to validate operation MOD', () => {
+    const result1 = UtilsService.isMod(3);
+    const result2 = UtilsService.isMod(6);
+    const result3 = UtilsService.isMod(null);
+    const result4 = UtilsService.isMod(4, 4);
+    const result5 = UtilsService.isMod(null, null);
+    const result6 = UtilsService.isMod(undefined, undefined);
+    const result7 = UtilsService.isMod(3, 6);
+    const result8 = UtilsService.isMod(6, 3);
+    const result9 = UtilsService.isMod(0);
+    const result10 = UtilsService.isMod(0, 0);
+
+    expect(result1).to.equal(false);
+    expect(result2).to.equal(true);
+    expect(result3).to.equal(false);
+    expect(result4).to.equal(true);
+    expect(result5).to.equal(false);
+    expect(result6).to.equal(false);
+    expect(result7).to.equal(false);
+    expect(result8).to.equal(true);
+    expect(result9).to.equal(false);
+    expect(result10).to.equal(false);
+  });
+
 });

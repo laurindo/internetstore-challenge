@@ -1,8 +1,10 @@
 exports.ERRORS = {
+    error_on_perform_mod: 'Error on perform function MOD',
     default: 'Some error happenend',
     error_parse: 'It was not possible to parse file',
     options_not_be_empty: 'Options should not be empty',
     data_empty: 'Data is empty',
+    some_error_happened: 'Happened some error',
     name_and_extension_required: 'Config Name and Extension are required',
     help: `
     You probably forgot some argument. 

@@ -17,7 +17,7 @@ exports.readData = async pathName => {
     try {
         return JSON.parse(data);
     } catch (e) {
-        return ErrorGenerator.generate(ERRORS.error_parse, '', 500, { details: data });
+        return ErrorGenerator.generate(ERRORS.error_parse, 500, { error: e });
     }
 };
 
@@ -29,7 +29,7 @@ exports.readAllPromises = async options => {
 
     // For each site I need to get the data inside the .json or .yaml
     SITES.forEach(async site => {
-        let res = self.readData(self.getPathName(`${options.configName}_${site}`, options.extension));
+        let res = self.readData(UtilsService.getPathName(`${options.configName}_${site}`, options.extension));
         promises.push(res); 
     });
 
@@ -58,7 +58,7 @@ exports.readFileJSON = async options => {
     
         options.callback(null, result, options);
     } catch (e) {
-        const error = ErrorGenerator.generate(ERRORS.error_parse, '', 500, { details: e });
+        const error = ErrorGenerator.generate(ERRORS.error_parse, 500, { error: e });
         options.callback(error);
     }
 };
@@ -70,61 +70,17 @@ exports.readFileYML = options => {
         const indentedJson = JSON.stringify(config, null, 4);
         callback(null, indentedJson, options);
     } catch (e) {
-        const error = ErrorGenerator.generate(ERRORS.error_parse, '', 500, { details: e });
+        const error = ErrorGenerator.generate(ERRORS.error_parse, 500, { error: e });
         options.callback(error);
     }
 };
 
 exports.proxyReadFile = options => {
-    if (UtilsService.isJSON(options)) {
+    if (UtilsService.isExtensionJSON(options)) {
         this.readFileJSON(options);
-    } else if (UtilsService.isYML(options)) {
+    } else if (UtilsService.isExtensionYML(options)) {
         this.readFileYML(options);
     }
-};
-
-/**
- * Given a configName and(or) siteId should return a File Name
- * 
- * Example Input with 'configName'
- *  - configName:   'checkout'
- *  - siteId:       'anpl'
- * 
- * Example Output:
- *  - 'checkout_anpl'
- * 
- * Example Input with only 'configName'
- *  - configName:   'checkout'
- * 
- * Example Output:
- *  - 'checkout'
- * 
- * @param {string} configName   - checkout  [required]
- * @param {string} siteId       - anpl      [optional]
-*/
-exports.getFileName = (configName, siteId) => {
-    if (configName && siteId) {
-        return `${configName}_${siteId}`;
-    } else if (configName) {
-        return `${configName}`;
-    }
-    return null;
-};
-
-/**
- * Given a fileName and extension, should return a relative Path Name
- * Example Input
- *  - fileName: 'checkout'
- *  - extension: 'json'
- * 
- * Example Output
- *  - './config-files/checkout.json'
- * 
- * @param {string} fileName   - checkout        [required]
- * @param {string} extension  - json/yaml/yml   [required]
-*/
-exports.getPathName = (fileName, extension) => {
-    return `./config-files/${fileName}.${extension}`;
 };
 
 /**
@@ -134,8 +90,8 @@ exports.getPathName = (fileName, extension) => {
  * @param {object} options          - some extra params                                 [optional]
 */
 exports.getConfig = (configName, siteId, environment = 'production', options) => {
-    const fileName = this.getFileName(configName, siteId);
-    const pathName = this.getPathName(fileName, options.extension);
+    const fileName = UtilsService.getFileName(configName, siteId);
+    const pathName = UtilsService.getPathName(fileName, options.extension);
     const commands = UtilsService.validateCommandsJSON(options);
     options = MergeData.merge(options, {
         pathName,

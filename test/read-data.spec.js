@@ -8,7 +8,7 @@ const ManagerDataFileModel = require('../models/manager-data-file-model');
 describe('## READ FILES ##', () => {
   
   it('simple test to read checkout.json', done => {
-    ReadDataService.readData('./config-files/checkout.json').then(result => {
+    ReadDataService.readData('./fixtures/checkout.json').then(result => {
       if (result && result.error) { throw result; }
       expect(result).to.include.all.keys('production', 'development', 'staging');
       done();

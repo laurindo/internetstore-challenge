@@ -1,4 +1,5 @@
 const ReadDataService = require('./read-data-service');
+const UtilsService = require('./utils-service');
 const ErrorGenerator = require('../services/error-generator-service');
 const GeneralConstant = require('../constants/general-constant');
 const ENV = GeneralConstant.ENV;
@@ -50,7 +51,7 @@ const ERRORS = GeneralConstant.ERRORS;
       }
       return objEnv[env];
     } catch (e) {
-      return ErrorGenerator.generate(ERRORS.error_parse, '', 500, { details: e });
+      return ErrorGenerator.generate(ERRORS.error_parse, 500, { error: e });
     }
   };
 
@@ -64,7 +65,7 @@ const ERRORS = GeneralConstant.ERRORS;
       });
       return result;
     } catch (e) {
-      return ErrorGenerator.generate(ERRORS.data_empty, '', 500, { details: e });
+      return ErrorGenerator.generate(ERRORS.data_empty, 500, { error: e });
     }
   };
 
@@ -73,12 +74,13 @@ const ERRORS = GeneralConstant.ERRORS;
   */
   exports.mergeEnviroments = async options => {
     try {
-      if (!options) { ErrorGenerator.generate(ERRORS.options_not_be_empty, '', 404, { details: null }); }
+      if (!options) { ErrorGenerator.generate(ERRORS.options_not_be_empty, 404, { error: null }); }
       const result = await ReadDataService.readAllPromises(options);
-      let dataFromFile = await ReadDataService.readData(ReadDataService.getPathName(`${options.configName}`, options.extension));
+      const envDataFileName = UtilsService.getPathName(`${options.configName}`, options.extension);
+      let dataFromFile = await ReadDataService.readData(envDataFileName);
       return this.mergeResultByEachENVList(result, dataFromFile);
     } catch (e) {
-      return ErrorGenerator.generate(ERRORS.error_parse, '', 500, { details: e });
+      return ErrorGenerator.generate(ERRORS.error_parse, 500, { error: e });
     }
   };
 
