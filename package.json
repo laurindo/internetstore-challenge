@@ -4,12 +4,16 @@
   "description": "Challenge Internet Stores using Node JS",
   "main": "index.js",
   "scripts": {
+    "start": "",
     "test": "mocha --reporter spec"
   },
   "author": "Daniel Laurindo",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "chai": "^4.1.2",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.3",
     "js-yaml": "^3.11.0",
     "mocha": "^5.2.0",
     "sinon": "^5.0.10"

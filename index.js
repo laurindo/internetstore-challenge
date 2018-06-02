@@ -1,30 +1,41 @@
+const express = require('express');
+const app = express();
+const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
+const PORT = process.env.PORT;
+
+const UtillService = require('./services/utils-service');
 const GeneralConstant = require('./constants/general-constant');
 const ReadDataService = require('./services/read-data-service');
 const ManagerCLIService = require('./services/manager-cli-service');
 const ManagerDataFileModel = require('./models/manager-data-file-model');
+const ReadDataRoute = require('./routes/read-data-route');
 const CLI_PARAMS = GeneralConstant.CLI_PARAMS;
 
 /**
- * CONFIG
+ * export NODE_ENV=dev  - development
+ * export NODE_ENV=qa   - staging
+ * export NODE_ENV=prod - production
 */
-const config = ManagerCLIService.getConfigParams();
-const configName = config[CLI_PARAMS.cn];
-const siteId = config[CLI_PARAMS.si];
-const environment = config[CLI_PARAMS.ev];
-const extension = config[CLI_PARAMS.ex];
-const commands = config[CLI_PARAMS.cm];
+dotenv.load({
+    path: UtillService.getEnvironment()
+});
 
 /**
- * READING and FORMATTING DATA
+ * Parse application/json
 */
-const callback = (error, result, options) => {
-    const dataFormatted = ManagerDataFileModel.getData(error, result, options);
-    console.log(dataFormatted);
-};
+app.use(bodyParser.json());
 
-//ReadDataService.getConfig(configName, siteId, extension, environment, commands, callback);
-ReadDataService.getConfig(configName, siteId, environment, {
-    extension,
-    commands,
-    callback
-}); 
+/**
+ * Routes to test API
+*/
+ReadDataRoute.start(app);
+
+app.listen(PORT, function () {
+    console.log(`App listening on port ${PORT}!`);
+});
+
+/**
+ * START CLI
+*/
+ManagerDataFileModel.start();

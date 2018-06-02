@@ -2,7 +2,9 @@ const ErrorGenerator = require('./error-generator-service');
 const GeneralConstant = require('../constants/general-constant');
 const EXTENSIONS = GeneralConstant.EXTENSIONS;
 const ERRORS = GeneralConstant.ERRORS;
+const TYPES = GeneralConstant.TYPES;
 const FIXTURE_PATH = GeneralConstant.FIXTURE_PATH;
+const ENV = GeneralConstant.ENV;
 
 /**
  * Given a number check if operation MOD return true
@@ -75,10 +77,7 @@ exports.isExtensionJSON = options => {
  * @param {object | string} obj - {only_env:true}     [required]
 */
 exports.isObject = obj => {
-  if (obj) {
-    return typeof obj === 'object';
-  }
-  return null;
+  return this.checkTypeOf(obj, TYPES.object);
 };
 
 /**
@@ -95,21 +94,34 @@ exports.isObject = obj => {
  * @param {object | string} obj - {only_env:true}     [required]
 */
 exports.dataIsString = obj => {
-  if (obj) {
-    return typeof obj === 'string';
+  return this.checkTypeOf(obj, TYPES.string);
+};
+
+exports.checkTypeOf = (obj, type) => {
+  if (!obj) { return null; }
+  switch (type) {
+    case TYPES.object:
+      return typeof obj === TYPES.object;
+    case TYPES.string:
+      return typeof obj === TYPES.string;
+    default:
+      return null;
   }
-  return null;
 };
 
 exports.validateCommandsJSON = options => {
-  if (options && options.commands && this.dataIsString(options.commands)) {
-      return JSON.parse(options.commands);
-  } else if (options && options.commands && this.isObject(options.commands)) {
-      return options.commands;
-  } else if ((options.siteId === 'default' || !options.siteId) && this.isExtensionYML(options)) {
-      return { ...options.commands, default: true };
+  try {
+    if (options && options.commands && this.dataIsString(options.commands)) {
+        return JSON.parse(options.commands);
+    } else if (options && options.commands && this.isObject(options.commands)) {
+        return options.commands;
+    } else if ((options.siteId === 'default' || !options.siteId) && this.isExtensionYML(options)) {
+        return { ...options.commands, default: true };
+    }
+    return null;
+  } catch (e) {
+    return ErrorGenerator.generate(ERRORS.error_parse, 500, { error: e });
   }
-  return null;
 };
 
 /**
@@ -128,7 +140,7 @@ exports.breakArrayInObject = (list) => {
   let tempKey = '';
 
   list.forEach(function (value, index) {
-      if (self.isMod(index)) {
+      if (self.isMod(index) || index === 0) {
           config[value] = '';
           tempKey = value;
       } else {
@@ -181,4 +193,11 @@ exports.getFileName = (configName, siteId) => {
 */
 exports.getPathName = (fileName, extension) => {
   return `${FIXTURE_PATH}/${fileName}.${extension}`;
+};
+
+exports.getEnvironment = () => {
+  if (process.env.NODE_ENV) {
+    return `.env.${process.env.NODE_ENV}`;
+  }
+  return `.env.${ENV.dev}`;
 };

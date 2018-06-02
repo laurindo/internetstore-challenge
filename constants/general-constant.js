@@ -32,7 +32,14 @@ exports.EXTENSIONS = {
     yaml: 'yaml'
 };
 
+exports.DEFAULT = 'default';
+
 exports.SITES = ['anpl', 'bkbe', 'bkit'];
+
+exports.TYPES = {
+    string: 'string',
+    object: 'object'
+};
 
 exports.ENV = {
     prod: 'production',

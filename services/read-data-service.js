@@ -3,7 +3,9 @@ const yaml = require('js-yaml');
 const util = require('util');
 const ReadFilePromisify = util.promisify(fs.readFile);
 
-const MergeData = require('./merge-data-service');
+const MergeDataService = require('./merge-data-service');
+const FileJSONModel = require('../models/file-json-model');
+const FileYMLModel = require('../models/file-yml-model');
 const ErrorGenerator = require('./error-generator-service');
 const UtilsService = require('./utils-service');
 const GeneralConstant = require('../constants/general-constant');
@@ -46,29 +48,21 @@ exports.readAllPromises = async options => {
 
 exports.readFileJSON = async options => {
     try {
-        let result = null;
-        let err = null;
-        
-        if (options.siteId) {
-            result = await this.readData(options.pathName);
-            result = MergeData.mergeSiteWithEnv(result, options);
-        } else {
-            result = await MergeData.mergeEnviroments(options);
-        }
-    
-        options.callback(null, result, options);
+      const result = await FileJSONModel.processData(options);
+      options.callback(null, result, options);
     } catch (e) {
-        const error = ErrorGenerator.generate(ERRORS.error_parse, 500, { error: e });
-        options.callback(error);
+      const error = ErrorGenerator.generate(ERRORS.error_parse, 500, { error: e });
+      options.callback(error);
     }
 };
 
-exports.readFileYML = options => {
+// FALTA FAZER ESSA PARTE NA API e FALTA TAMBEM VER COMO PASSAR O COMANDO only_env VIA URL
+
+exports.readFileYML = async options => {
     try {
-        const callback = options.callback;
-        const config = yaml.safeLoad(fs.readFileSync(options.pathName, 'utf8'));
-        const indentedJson = JSON.stringify(config, null, 4);
-        callback(null, indentedJson, options);
+        let result = yaml.safeLoad(fs.readFileSync(options.pathName, 'utf8'));
+        let dataMerged = await FileYMLModel.processData(result, options);
+        options.callback(null, dataMerged, options);
     } catch (e) {
         const error = ErrorGenerator.generate(ERRORS.error_parse, 500, { error: e });
         options.callback(error);
@@ -93,7 +87,7 @@ exports.getConfig = (configName, siteId, environment = 'production', options) =>
     const fileName = UtilsService.getFileName(configName, siteId);
     const pathName = UtilsService.getPathName(fileName, options.extension);
     const commands = UtilsService.validateCommandsJSON(options);
-    options = MergeData.merge(options, {
+    options = MergeDataService.merge(options, {
         pathName,
         configName, 
         siteId,

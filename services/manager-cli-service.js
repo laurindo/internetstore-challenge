@@ -5,7 +5,7 @@ const ERRORS = GeneralConstant.ERRORS;
 const getConfigParams = () => {
     const args = process.argv.splice(2, process.argv.length);
     
-    if (!UtilsService.isMod(args.length)) {
+    if (!UtilsService.isMod(args.length) && args.length > 0) {
         throw new Error(ERRORS.help);
         return;
     }
