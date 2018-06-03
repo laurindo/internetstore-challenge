@@ -55,7 +55,7 @@ $ http://localhost:3001/api/get-config?configName=config&extension=yml
 
 **Test Case 02**
 ```sh
-$ npm install
+$ // using CLI Command
 $ node index -cn checkout -si anpl -cm {\"only_env\":\"true\"} -ex json
 $ node index -cn checkout -si anpl -cm {\"only_env\":\"true\"} -ex yaml
 $
@@ -80,7 +80,7 @@ $ http://localhost:3001/api/get-config?configName=config&siteId=bkbe&extension=y
 
 **Test Case 03**
 ```sh
-$ npm install
+$ // using CLI Command
 $ node index -cn checkout -si anpl -ex json
 $ node index -cn checkout -si anpl -ex yaml
 $
