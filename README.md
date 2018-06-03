@@ -27,6 +27,9 @@ $ node index -cn checkout -ex yaml
 $
 $ // using API
 $ http://localhost:3001/api/get-config?configName=checkout
+$
+$ // using API for YAML/YML extension
+$ http://localhost:3001/api/get-config?configName=config&extension=yml
 ```
 
 **Output case 01**

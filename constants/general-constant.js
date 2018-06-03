@@ -6,6 +6,7 @@ exports.ERRORS = {
     data_empty: 'Data is empty',
     some_error_happened: 'Happened some error',
     name_and_extension_required: 'Config Name and Extension are required',
+    error_read_object_keys: 'Error on read object keys',
     help: `
     You probably forgot some argument. 
     

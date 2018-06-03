@@ -4,11 +4,13 @@ const expect = require('chai').expect;
 
 const ReadDataService = require('../services/read-data-service');
 const ManagerDataFileModel = require('../models/manager-data-file-model');
+const ReadDataFactoryService = require('../services/read-data-factory-service');
 
 describe('## READ FILES ##', () => {
   
   it('simple test to read checkout.json', done => {
-    ReadDataService.readData('./fixtures/checkout.json').then(result => {
+    const factory = ReadDataFactoryService.load('json');
+    factory.readData('./fixtures/checkout.json').then(result => {
       if (result && result.error) { throw result; }
       expect(result).to.include.all.keys('production', 'development', 'staging');
       done();

@@ -1,27 +1,12 @@
-const fs = require('fs');
-const yaml = require('js-yaml');
-const util = require('util');
-const ReadFilePromisify = util.promisify(fs.readFile);
-
+const ReadDataFactoryService = require('../services/read-data-factory-service');
 const MergeDataService = require('./merge-data-service');
 const FileJSONModel = require('../models/file-json-model');
 const FileYMLModel = require('../models/file-yml-model');
 const ErrorGenerator = require('./error-generator-service');
 const UtilsService = require('./utils-service');
 const GeneralConstant = require('../constants/general-constant');
-const EXTENSIONS = GeneralConstant.EXTENSIONS;
 const SITES = GeneralConstant.SITES;
-const ENV = GeneralConstant.ENV;
 const ERRORS = GeneralConstant.ERRORS;
-
-exports.readData = async pathName => {
-    const data = await ReadFilePromisify(pathName, 'utf8').catch(err => { return err });
-    try {
-        return JSON.parse(data);
-    } catch (e) {
-        return ErrorGenerator.generate(ERRORS.error_parse, 500, { error: e });
-    }
-};
 
 exports.readAllPromises = async options => {
     const self = this;
@@ -31,12 +16,14 @@ exports.readAllPromises = async options => {
 
     // For each site I need to get the data inside the .json or .yaml
     SITES.forEach(async site => {
-        let res = self.readData(UtilsService.getPathName(`${options.configName}_${site}`, options.extension));
+        const pathName = UtilsService.getPathName(`${options.configName}_${site}`, options.extension);
+        let factory = ReadDataFactoryService.load(options.extension);
+        let res = factory.readData(pathName).catch(error => []);
         promises.push(res); 
     });
 
     // Get all promises resolved inside array
-    promiseResults = await Promise.all(promises);
+    promiseResults = await Promise.all(promises).catch(error => []);
     promiseResults.forEach(result => {
         if (result && !result.error) {
             sitesMerged = Object.assign({}, sitesMerged, result);
@@ -46,34 +33,11 @@ exports.readAllPromises = async options => {
     return sitesMerged;
 };
 
-exports.readFileJSON = async options => {
-    try {
-      const result = await FileJSONModel.processData(options);
-      options.callback(null, result, options);
-    } catch (e) {
-      const error = ErrorGenerator.generate(ERRORS.error_parse, 500, { error: e });
-      options.callback(error);
-    }
-};
-
-// FALTA FAZER ESSA PARTE NA API e FALTA TAMBEM VER COMO PASSAR O COMANDO only_env VIA URL
-
-exports.readFileYML = async options => {
-    try {
-        let result = yaml.safeLoad(fs.readFileSync(options.pathName, 'utf8'));
-        let dataMerged = await FileYMLModel.processData(result, options);
-        options.callback(null, dataMerged, options);
-    } catch (e) {
-        const error = ErrorGenerator.generate(ERRORS.error_parse, 500, { error: e });
-        options.callback(error);
-    }
-};
-
 exports.proxyReadFile = options => {
     if (UtilsService.isExtensionJSON(options)) {
-        this.readFileJSON(options);
+      FileJSONModel.readFileJSON(options);
     } else if (UtilsService.isExtensionYML(options)) {
-        this.readFileYML(options);
+      FileYMLModel.readFileYML(options);
     }
 };
 

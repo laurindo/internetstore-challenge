@@ -1,3 +1,4 @@
+const ReadDataFactoryService = require('./read-data-factory-service');
 const ReadDataService = require('./read-data-service');
 const UtilsService = require('./utils-service');
 const ErrorGenerator = require('../services/error-generator-service');
@@ -10,7 +11,7 @@ const ERRORS = GeneralConstant.ERRORS;
    * @param {array/object} ...args - operator spread to expand object and merge inside one main object
   */
   exports.merge = (...args) => {
-      return Object.assign({}, ...args);
+    return Object.assign({}, ...args);
   };
 
   /**
@@ -55,30 +56,16 @@ const ERRORS = GeneralConstant.ERRORS;
     }
   };
 
-  exports.mergeResultByEachENVList = (result, dataFromFile) => {
-    try {
-      const self = this;
-      Object.keys(result).forEach(key => {
-        result[key][ENV.prod] = self.mergeEnv(result[key], ENV.prod, dataFromFile);
-        result[key][ENV.dev] = self.mergeEnv(result[key], ENV.dev, dataFromFile);
-        result[key][ENV.qa] = self.mergeEnv(result[key], ENV.qa,  dataFromFile);
-      });
-      return result;
-    } catch (e) {
-      return ErrorGenerator.generate(ERRORS.data_empty, 500, { error: e });
-    }
-  };
-
   /**
    * Merge data from all enviroments - production/staging/development
   */
-  exports.mergeEnviroments = async options => {
+  exports.mergeEnviroments = async (targetData, options) => {
     try {
       if (!options) { ErrorGenerator.generate(ERRORS.options_not_be_empty, 404, { error: null }); }
-      const result = await ReadDataService.readAllPromises(options);
       const envDataFileName = UtilsService.getPathName(`${options.configName}`, options.extension);
-      let dataFromFile = await ReadDataService.readData(envDataFileName);
-      return this.mergeResultByEachENVList(result, dataFromFile);
+      let factory = ReadDataFactoryService.load(options.extension);
+      let dataFromFile = await factory.readData(envDataFileName);
+      return factory.mergeResultByEachENVList(targetData, dataFromFile);
     } catch (e) {
       return ErrorGenerator.generate(ERRORS.error_parse, 500, { error: e });
     }
