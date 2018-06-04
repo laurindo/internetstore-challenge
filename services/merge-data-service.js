@@ -15,7 +15,7 @@ const ERRORS = GeneralConstant.ERRORS;
   };
 
   /**
-   * 
+   *
    * Function to merge differents enviroments inside object site
    * Example output:
    * {
@@ -48,7 +48,7 @@ const ERRORS = GeneralConstant.ERRORS;
       if (objEnv[env]) {
           objEnv[env] = Object.assign({}, dataFromFile[env], objEnv[env]);
       } else {
-          objEnv[env] = Object.assign({}, dataFromFile[env]); 
+          objEnv[env] = Object.assign({}, dataFromFile[env]);
       }
       return objEnv[env];
     } catch (e) {
@@ -81,4 +81,9 @@ const ERRORS = GeneralConstant.ERRORS;
       return result[options.siteId];
     }
     return result[options.siteId][options.environment];
+  };
+
+  exports.performPromisesAndMergeResult = async options => {
+    const targetData = await ReadDataService.readAllPromises(options);
+    return await this.mergeEnviroments(targetData, options);
   };

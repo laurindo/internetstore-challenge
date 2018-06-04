@@ -203,8 +203,3 @@ exports.getEnvironment = () => {
   }
   return `.env.${ENV.dev}`;
 };
-
-exports.performPromisesAndMergeResult = async options => {
-  const targetData = await ReadDataService.readAllPromises(options);
-  return await MergeDataService.mergeEnviroments(targetData, options);
-};

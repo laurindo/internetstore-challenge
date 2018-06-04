@@ -5,11 +5,12 @@ exports.ERRORS = {
     options_not_be_empty: 'Options should not be empty',
     data_empty: 'Data is empty',
     some_error_happened: 'Happened some error',
+    error_need_pass_params: 'You need pass some params. Check documentation to see all params',
     name_and_extension_required: 'Config Name and Extension are required',
     error_read_object_keys: 'Error on read object keys',
     help: `
-    You probably forgot some argument. 
-    
+    You probably forgot some argument.
+
     [HELP]
     -cn configName:     represent the file's name       (checkout/config/forms_customer)
     -si siteId:         represent site name             (bkbe/anpl/bkit)

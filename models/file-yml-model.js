@@ -12,19 +12,16 @@ const DEFAULT = GeneralConstant.DEFAULT;
 
 exports.processData = async (result, options) => {
   try {
-    let dataProcessed = {};
-    let dataMerged = {};
     if (options.siteId) {
+      let dataProcessed = {};
       if (result.default) {
         dataProcessed[options.siteId] = result.default;
       } else {
         dataProcessed[options.siteId] = result;
       }
-      dataMerged = MergeDataService.mergeSiteWithEnv(dataProcessed, options);
-    } else {
-      return await UtilsService.performPromisesAndMergeResult(options);
+      return MergeDataService.mergeSiteWithEnv(dataProcessed, options);
     }
-    return dataMerged;
+    return await MergeDataService.performPromisesAndMergeResult(options);
   } catch (e) {
     return ErrorGenerator.generate(ERRORS.some_error_happened, 500, { error: e });
   }
