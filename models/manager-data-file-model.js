@@ -17,7 +17,7 @@ exports.getData = (err, result, options) => {
     }
     return result;
   } catch (e) {
-    return ErrorGenerator.generate(ERRORS.some_error_happened, 500, { error: e });  
+    return ErrorGenerator.generate(ERRORS.some_error_happened, 500, { error: e });
   }
 };
 
@@ -29,20 +29,20 @@ exports.getDataByAPI = (req, res) => {
     const _extension = req.query.extension;
     const _command = {
       only_env: req.query.onlyEnv
-    }; 
+    };
     const callback = (err, result, options) => {
       const resultData = this.getData(err, result, options);
       res.status(200).json(resultData);
     };
     this.start(_config_name, _site_id, _env, _extension, _command, callback);
   } catch (e) {
-    return ErrorGenerator.generate(ERRORS.some_error_happened, 500, { error: e });  
+    return ErrorGenerator.generate(ERRORS.some_error_happened, 500, { error: e });
   }
 };
 
 exports.start = (_config_name, _site_id, _env = 'production', _extension = 'json', _command, callback) => {
   const self = this;
-  
+
   if (typeof callback !== 'function') {
     callback = (err, result, options) => {
       const resultData = self.getData(err, result, options);
@@ -53,7 +53,7 @@ exports.start = (_config_name, _site_id, _env = 'production', _extension = 'json
   /**
    * CONFIG
   */
-  const config = ManagerCLIService.getConfigParams();
+  const config = ManagerCLIService.getConfigParams(process.argv);
   const configName = _config_name || config[CLI_PARAMS.cn];
   const siteId = _site_id || config[CLI_PARAMS.si];
   const environment = _env || config[CLI_PARAMS.ev];

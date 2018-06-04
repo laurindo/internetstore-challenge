@@ -6,7 +6,7 @@ const EXTENSIONS = GeneralConstant.EXTENSIONS;
 const factories = {
   yml: {
     readData: FileYMLModel.readData,
-    mergeResultByEachENVList: FileYMLModel.mergeDataWithEnvs 
+    mergeResultByEachENVList: FileYMLModel.mergeDataWithEnvs
   },
   json: {
     readData: FileJSONModel.readData,
