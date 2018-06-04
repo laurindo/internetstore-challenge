@@ -17,8 +17,7 @@ exports.processData = async options => {
       result = await this.readData(options.pathName);
       dataMerged = MergeDataService.mergeSiteWithEnv(result, options);
     } else {
-      const targetData = await ReadDataService.readAllPromises(options);
-      dataMerged = await MergeDataService.mergeEnviroments(targetData, options);
+      return await UtilsService.performPromisesAndMergeResult(options);
     }
     return dataMerged;
   } catch (e) {

@@ -1,3 +1,5 @@
+const MergeDataService = require('./merge-data-service');
+const ReadDataService = require('./read-data-service');
 const ErrorGenerator = require('./error-generator-service');
 const GeneralConstant = require('../constants/general-constant');
 const EXTENSIONS = GeneralConstant.EXTENSIONS;
@@ -8,15 +10,15 @@ const ENV = GeneralConstant.ENV;
 
 /**
  * Given a number check if operation MOD return true
- * 
+ *
  * Example Input number = 2
  * Example Output:
  *  - true
- * 
+ *
  * Example Input number = 3
  * Example Output:
  *  - false
- * 
+ *
  * @param {string} number     [required]
  * @param {int} divisor       [optional]
 */
@@ -35,15 +37,15 @@ exports.isMod = (number, divisor = 2) => {
 
 /**
  * Given an object check if has a extension YML
- * 
+ *
  * Example Input with { extension: 'yml' }
  * Example Output:
  *  - true
- * 
+ *
  * Example Input with { extension: 'yaml' }
  * Example Output:
  *  - true
- * 
+ *
  * @param {object} obj - { extension: 'yml | yaml' }     [required]
 */
 exports.isExtensionYML = options => {
@@ -52,11 +54,11 @@ exports.isExtensionYML = options => {
 
 /**
  * Given an object check if has a extension JSON
- * 
+ *
  * Example Input with { extension: 'json' }
  * Example Output:
  *  - true
- * 
+ *
  * @param {object} obj - { extension: 'json' }     [required]
 */
 exports.isExtensionJSON = options => {
@@ -65,15 +67,15 @@ exports.isExtensionJSON = options => {
 
 /**
  * Given an object or string check if typeof is object
- * 
+ *
  * Example Input with '{\'only_env\': \'true\'}'
  * Example Output:
  *  - false
- * 
+ *
  * Example Input with {only_env: true}
  * Example Output:
  *  - true
- * 
+ *
  * @param {object | string} obj - {only_env:true}     [required]
 */
 exports.isObject = obj => {
@@ -82,15 +84,15 @@ exports.isObject = obj => {
 
 /**
  * Given an object or string check if typeof is string
- * 
+ *
  * Example Input with '{\'only_env\': \'true\'}'
  * Example Output:
  *  - true
- * 
+ *
  * Example Input with {only_env: true}
  * Example Output:
  *  - false
- * 
+ *
  * @param {object | string} obj - {only_env:true}     [required]
 */
 exports.dataIsString = obj => {
@@ -126,12 +128,12 @@ exports.validateCommandsJSON = options => {
 
 /**
  * Given a list(array) should return a object
- * 
+ *
  * Example Input with ['-cn', 'checkout', '-si', 'anpl']
- * 
+ *
  * Example Output:
  *  - { cn: 'checkout', si: 'anpl' }
- * 
+ *
  * @param {array} list - checkout       [required]
 */
 exports.breakArrayInObject = (list) => {
@@ -147,26 +149,26 @@ exports.breakArrayInObject = (list) => {
           config[tempKey] = value;
       }
   });
-  
+
   return config;
 };
 
 /**
  * Given a configName and(or) siteId should return a File Name
- * 
+ *
  * Example Input with 'configName'
  *  - configName:   'checkout'
  *  - siteId:       'anpl'
- * 
+ *
  * Example Output:
  *  - 'checkout_anpl'
- * 
+ *
  * Example Input with only 'configName'
  *  - configName:   'checkout'
- * 
+ *
  * Example Output:
  *  - 'checkout'
- * 
+ *
  * @param {string} configName   - checkout  [required]
  * @param {string} siteId       - anpl      [optional]
 */
@@ -184,10 +186,10 @@ exports.getFileName = (configName, siteId) => {
 * Example Input
 *  - fileName: 'checkout'
 *  - extension: 'json'
-* 
+*
 * Example Output
 *  - './fixtures/checkout.json'
-* 
+*
 * @param {string} fileName   - checkout        [required]
 * @param {string} extension  - json/yaml/yml   [required]
 */
@@ -200,4 +202,9 @@ exports.getEnvironment = () => {
     return `.env.${process.env.NODE_ENV}`;
   }
   return `.env.${ENV.dev}`;
+};
+
+exports.performPromisesAndMergeResult = async options => {
+  const targetData = await ReadDataService.readAllPromises(options);
+  return await MergeDataService.mergeEnviroments(targetData, options);
 };
