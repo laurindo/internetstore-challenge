@@ -19,14 +19,12 @@ describe('## MANAGER CLI SERVICE ##', () => {
   it('should return specific error', () => {
     const processEnvArguments = [];
     const result = ManagerCLIService.getConfigParams(processEnvArguments);
-    console.log(result);
     expect(result.message).equal(ERRORS.error_need_pass_params);
     expect(result.status).equal(400);
   });
 
   it('should return default error', () => {
     const result = ManagerCLIService.getConfigParams();
-    console.log(result);
     expect(result.message).equal(ERRORS.default);
     expect(result.status).equal(500);
   });

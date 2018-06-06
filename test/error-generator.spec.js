@@ -5,7 +5,7 @@ const ERRORS = GeneralConstant.ERRORS;
 
 describe('## ERROR GENERATOR ##', () => {
   it('test generate function', () => {
-    expect(ErrorGeneratorService.generate()).include.any.keys('status', 'status', 'error');
+    expect(ErrorGeneratorService.generate()).include.any.keys('message', 'status', 'error');
   });
 
   it('should return the correct message error', () => {
